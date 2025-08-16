@@ -1,0 +1,16 @@
+{
+	"name": "ls_kv_sami",
+	"properties": {
+		"parameters": {
+			"keyVaultName": {
+				"type": "string",
+				"defaultValue": "kv-shared-neu"
+			}
+		},
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "@{concat('https://',linkedService().keyVaultName,'.vault.azure.net')}"
+		}
+	}
+}

@@ -1,0 +1,32 @@
+{
+	"name": "ds_rest",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_rest_token",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"baseUrl": {
+					"value": "@dataset().baseUrl",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"baseUrl": {
+				"type": "string"
+			},
+			"relUrl": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": {
+				"value": "@dataset().relUrl",
+				"type": "Expression"
+			}
+		},
+		"schema": []
+	}
+}

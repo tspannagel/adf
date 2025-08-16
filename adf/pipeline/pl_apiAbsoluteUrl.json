@@ -1,0 +1,133 @@
+{
+	"name": "pl_apiAbsoluteUrl",
+	"properties": {
+		"activities": [
+			{
+				"name": "call_token",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": true,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "GET",
+					"url": {
+						"value": "@concat('https://kv-shared-neu.vault.azure.net/secrets/',pipeline().parameters.secretName,'/?api-version=7.4')",
+						"type": "Expression"
+					},
+					"authentication": {
+						"type": "MSI",
+						"resource": "https://vault.azure.net"
+					}
+				}
+			},
+			{
+				"name": "cp_restToRaw",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "call_token",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "RestSource",
+						"httpRequestTimeout": "00:01:40",
+						"requestInterval": "00.00:00:00.010",
+						"requestMethod": "GET",
+						"additionalHeaders": {
+							"x-functions-key": {
+								"value": "@activity('call_token').output.value",
+								"type": "Expression"
+							}
+						},
+						"paginationRules": {
+							"AbsoluteUrl": "$.links.next"
+						}
+					},
+					"sink": {
+						"type": "JsonSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "JsonWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_rest",
+						"type": "DatasetReference",
+						"parameters": {
+							"baseUrl": {
+								"value": "@pipeline().parameters.baseUrl",
+								"type": "Expression"
+							},
+							"relUrl": {
+								"value": "@concat(pipeline().parameters.endpoint,'?pageSize=',pipeline().parameters.pageSize)",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_adls_json_folder",
+						"type": "DatasetReference",
+						"parameters": {
+							"accountName": "dltisp01neu",
+							"containerName": "raw",
+							"directory": "api-mock/absoluteUrl",
+							"fileName": {
+								"value": "@concat(formatDateTime(utcNow(), 'yyyyMMdd_HHmm'),'_absoluteUrl_',guid(),'.json')",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			}
+		],
+		"parameters": {
+			"secretName": {
+				"type": "string",
+				"defaultValue": "fa-api-mock-master"
+			},
+			"baseUrl": {
+				"type": "string",
+				"defaultValue": "https://fa-api-mock.northeurope-01.azurewebsites.net/api/"
+			},
+			"endpoint": {
+				"type": "string",
+				"defaultValue": "item/list"
+			},
+			"pageSize": {
+				"type": "string",
+				"defaultValue": "100"
+			}
+		},
+		"variables": {
+			"queryParameters": {
+				"type": "String"
+			}
+		},
+		"annotations": []
+	}
+}

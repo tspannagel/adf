@@ -1,0 +1,17 @@
+{
+	"name": "ls_adls_sami",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"parameters": {
+			"accountName": {
+				"type": "string",
+				"defaultValue": "dltisp01neu"
+			}
+		},
+		"annotations": [],
+		"type": "AzureBlobFS",
+		"typeProperties": {
+			"url": "@{concat('https://',linkedService().accountName,'.dfs.core.windows.net')}"
+		}
+	}
+}

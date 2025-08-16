@@ -1,0 +1,9 @@
+{
+	"name": "adf-tisp-neu",
+	"location": "northeurope",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "ae1d12c2-bd06-401d-aba1-0a94edda2c0e",
+		"tenantId": "77d131af-ee45-4012-9677-52c5dfdf8f4c"
+	}
+}
